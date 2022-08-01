@@ -85,4 +85,84 @@ describe("/api/reviews/:review_id", () => {
             }) 
         })
     })
+
+    describe("PATCH", () => {
+        test("Status 201: When a valid review_id is passed, if a positive number is passed, increment it by that much", () => {
+
+            return request(app)
+            .post("/api/reviews/2")
+            .send({inc_votes: 20})
+            .expect(201)
+            .then(({ body }) => {
+                const { review } = body; 
+                expect(review).toEqual(
+                    expect.objectContaining({
+                        votes: 25
+                    }))
+            })
+        })
+
+        test("Status 201: When a valid review_id is passed, if a negative number is passed, decrement it by that much", () => {
+
+            return request(app)
+            .post("/api/reviews/4")
+            .send({inc_votes: -3})
+            .expect(201)
+            .then(({ body }) => {
+                const { review } = body; 
+                expect(review).toEqual(
+                    expect.objectContaining({
+                        votes: 4
+                    }))
+            })
+        })
+
+        test("Status 400: When an incorrect data type is input, return status code 400 and 'Invalid review ID type'", () => {
+            return request(app)
+            .post("/api/reviews/thirteen")
+            .expect(400)
+            .send({inc_votes: 13})
+            .then(({ body }) => {
+                const { msg } = body;
+                expect(msg).toBe('Invalid review ID type!')
+            })
+        })
+
+        test("Status 400: When inc_votes is left out/changed, return a status 400 with 'Invalid property'", () => {
+            return request(app)
+            .post("/api/reviews/2")
+            .expect(400)
+            .send({change_votes: 100})
+            .then(({ body }) => {
+                const { msg } = body;
+                expect(msg).toBe('Invalid property!')
+            })
+        })
+
+        test("Status 400: When an non-number data type is posted to inc_votes, return a status 400 with 'Invalid value'", () => {
+            return request(app)
+            .post("/api/reviews/2")
+            .expect(400)
+            .send({inc_votes: "one hundred million"})
+            .then(({ body }) => {
+                const { msg } = body;
+                expect(msg).toBe('Invalid value!')
+            })
+        })
+
+        test("Status 404: When a valid ID is searched but doesn't exist, return status code 404 and 'Review ID does not exist'", () => {
+            return request(app)
+            .post("/api/reviews/40")
+            .expect(404)
+            .send({inc_votes: -100})
+            .then(({ body }) => {
+                const { msg } = body;
+                expect(msg).toBe('Review ID does not exist!')
+            })
+        })
+    })
+
+
+    
+
 })
