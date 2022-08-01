@@ -15,6 +15,6 @@ exports.fetchReviewById = (review_id) => {
             return Promise.reject({status: 404, msg: 'Review ID does not exist!'})
         }
 
-        return review;
+        return review[0];
     })
 }
