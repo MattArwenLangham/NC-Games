@@ -42,27 +42,36 @@ describe("/api/reviews/:review_id", () => {
     describe("GET", () => {
         test("Status 200: When a valid correct review ID is searched, return that review", () => {
 
-            const expectedReview = {
-                review_id: 1,
-                title: 'Agricola',
-                designer: 'Uwe Rosenberg',
-                owner: 'mallionaire',
-                review_img_url:
-                  'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
-                review_body: 'Farmyard fun!',
-                category: 'euro game',
-                created_at: "2021-01-18T10:00:20.514Z",
-                votes: 1,
-                comment_count: "0"
-            }
-
             return request(app)
             .get("/api/reviews/1")
             .expect(200)
             .then(({body}) => {
                 const { review } = body;
                 expect(review).toBeInstanceOf(Object)
-                expect(review).toEqual((expectedReview));
+                expect(review).toEqual(
+                    expect.objectContaining({
+                        review_id: 1,
+                        title: 'Agricola',
+                        designer: 'Uwe Rosenberg',
+                        owner: 'mallionaire',
+                        review_img_url:
+                          'https://www.golenbock.com/wp-content/uploads/2015/01/placeholder-user.png',
+                        review_body: 'Farmyard fun!',
+                        category: 'euro game',
+                        created_at: "2021-01-18T10:00:20.514Z",
+                        votes: 1,
+                    })
+                );
+            })
+        })
+
+        test("Status 200: When a valid review ID is returned, comment_count is a property.", () => {
+            return request(app)
+            .get("/api/reviews/1")
+            .expect(200)
+            .then(({body}) => {
+                const { review } = body;
+                expect(review.hasOwnProperty("comment_count")).toBe(true);
             })
         })
 
