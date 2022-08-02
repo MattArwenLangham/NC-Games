@@ -166,3 +166,27 @@ describe("/api/reviews/:review_id", () => {
     
 
 })
+
+describe("/api/users", () => {
+    describe("GET", () => {
+        test("Status 200: Returns an array of all users when the GET HTTP method is used on the users endpoint.", () => {
+            return request(app)
+            .get("/api/users")
+            .expect(200)
+            .then(({body}) => {
+                const { users } = body;
+                expect(users).toBeInstanceOf(Array);
+                expect(users).toHaveLength(4);
+                users.forEach((user) => {
+                    expect(user).toEqual(
+                        expect.objectContaining ({
+                            username: expect.any(String),
+                            name: expect.any(String),
+                            avatar_url: expect.any(String)
+                        })
+                    )
+                })
+            })
+        })
+    })
+})
