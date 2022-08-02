@@ -216,6 +216,63 @@ describe("/api/reviews/:review_id", () => {
 
 })
 
+describe("/api/reviews/:review_id/comments", () => {
+    describe("GET", () => {
+        test("Status 200: If review_id is valid and has comments, returns array of comments", () => {
+            return request(app)
+            .get("/api/reviews/2/comments")
+            .expect(200)
+            .then(({body}) => {
+                const { comments } = body;
+                expect(comments).toBeInstanceOf(Array)
+                expect(comments).toHaveLength(3)
+                comments.forEach((comment) => {
+                    expect(comment).toEqual(
+                        expect.objectContaining({
+                            comment_id: expect.any(Number),
+                            votes: expect.any(Number),
+                            created_at: expect.any(String),
+                            author: expect.any(String),
+                            body: expect.any(String),
+                            review_id: 2
+                        })
+                    )
+                })
+            })
+        })
+
+        test("Status 200: If review_id is valid but has no comments, returns 'No comments'.", () => {
+            return request(app)
+            .get("/api/reviews/1/comments")
+            .expect(200)
+            .then(({body}) => {
+                const { comments } = body;
+                expect(comments).toBe('No Comments!')
+            })
+        })
+
+        test("Status 400: When an incorrect data type is input, return status code 400 and 'Invalid review ID type", () => {
+            return request(app)
+            .get("/api/reviews/byMatt/comments")
+            .expect(400)
+            .then(({ body }) => {
+                const { msg } = body;
+                expect(msg).toBe('Invalid review ID type!')
+            })
+        })
+
+        test("Status 404: When a valid ID is searched but doesn't exist, return status code 404 and 'Review ID does not exist'", () => {
+            return request(app)
+            .get("/api/reviews/404/comments")
+            .expect(404)
+            .then(({ body }) => {
+                const { msg } = body;
+                expect(msg).toBe('Review ID does not exist!')
+            })
+        })
+    })
+})
+
 describe("/api/users", () => {
     describe("GET", () => {
         test("Status 200: Returns an array of all users when the GET HTTP method is used on the users endpoint.", () => {
