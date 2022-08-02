@@ -1,6 +1,6 @@
 const {
     categoryControllers: { getCategories },
-    reviewControllers: { getReviewById, patchReview },
+    reviewControllers: { getReviewById, patchReview, getReviews },
     userControllers: { getUsers }
 } = require("./controllers/index");
 
@@ -11,6 +11,7 @@ app.use(express.json())
 
 app.get("/api/categories", getCategories);
 
+app.get("/api/reviews", getReviews)
 app.get("/api/reviews/:review_id", getReviewById)
 app.patch("/api/reviews/:review_id", patchReview)
 
