@@ -1,5 +1,17 @@
 const db = require("../db/connection")
 
+exports.fetchReviews = () => {
+    return db.query(`
+        SELECT reviews.*, COUNT (comment_id) AS comment_count FROM reviews
+        LEFT JOIN comments ON reviews.review_id = comments.review_id
+        GROUP BY reviews.review_id
+        ORDER BY created_at DESC;
+    `)
+    .then(({ rows: reviews }) => {
+        return reviews;
+    })
+}
+
 exports.fetchReviewById = (review_id) => {
     
     if(isNaN(parseInt(review_id))){

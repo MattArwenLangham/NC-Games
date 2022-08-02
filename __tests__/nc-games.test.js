@@ -1,8 +1,10 @@
-const request = require("supertest");
-const app = require ("../app.js");
+const request = require("supertest")
+const app = require ("../app.js")
 const seed = require("../db/seeds/seed.js")
 const data = require("../db/data/test-data/index")
 const db = require("../db/connection")
+require("jest-sorted")
+
 
 beforeEach(() => {
     return seed(data);
@@ -32,6 +34,46 @@ describe("/api/categories", () => {
                     )
 
                 })
+            })
+        })
+    })
+})
+
+describe("/api/reviews", () => {
+    describe("GET", () => {
+        test("Status 200: Returns an array of reviews objects", () => {
+            return request(app)
+            .get("/api/reviews")
+            .expect(200)
+            .then(({body}) => {
+                const { reviews } = body;
+                expect(reviews).toBeInstanceOf(Array)
+                expect(reviews).toHaveLength(13)
+                reviews.forEach((review) => {
+                    expect(review).toEqual(
+                        expect.objectContaining({
+                            owner: expect.any(String),
+                            title: expect.any(String),
+                            review_id: expect.any(Number),
+                            category: expect.any(String),
+                            review_img_url: expect.any(String),
+                            created_at: expect.any(String),
+                            votes: expect.any(Number),
+                            designer: expect.any(String),
+                            comment_count: expect.any(String)
+                        })
+                    )
+                })
+            })
+        })
+        
+        test("Status 200: Returns an array default sorted by date in descending order", () => {
+            return request(app)
+            .get("/api/reviews")
+            .then(({body}) => {
+                const { reviews } = body;
+                expect(reviews).toBeSortedBy('created_at', { 
+                    descending: true })
             })
         })
     })
