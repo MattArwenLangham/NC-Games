@@ -1,3 +1,4 @@
+const { ident } = require("pg-format");
 const db = require("../db/connection")
 
 exports.fetchReviews = () => {
@@ -13,7 +14,7 @@ exports.fetchReviews = () => {
 }
 
 exports.fetchReviewById = (review_id) => {
-    
+
     if(isNaN(parseInt(review_id))){
         return Promise.reject({status: 400, msg: 'Invalid review ID type!'})
     }
@@ -30,6 +31,26 @@ exports.fetchReviewById = (review_id) => {
         }
 
         return review[0];
+    })
+}
+
+exports.fetchCommentsByReviewId = (review_id) => {
+
+    return this.fetchReviewById(review_id)
+    .then(() => {
+        return db.query(`
+        SELECT comments.* FROM reviews
+        JOIN comments ON reviews.review_id = comments.review_id
+        WHERE reviews.review_id = $1;`, [review_id])
+        .then(({ rows: comments }) => {
+            if (!comments.length){
+                return 'No Comments!';
+            }
+            return comments;
+        })
+    })
+    .catch((err) => {
+        return Promise.reject(err);
     })
 }
 
