@@ -1,4 +1,3 @@
-const { ident } = require("pg-format");
 const db = require("../db/connection")
 
 exports.fetchReviews = () => {
@@ -49,34 +48,27 @@ exports.fetchCommentsByReviewId = (review_id) => {
             return comments;
         })
     })
-    .catch((err) => {
-        return Promise.reject(err);
-    })
 }
 
 exports.updateReview = (review_id, inc_votes) => {
-
-    if(isNaN(parseInt(review_id))){
-        return Promise.reject({status: 400, msg: 'Invalid review ID type!'})
-    } else if (!inc_votes){
+    
+    if (!inc_votes){
         return Promise.reject({status: 400, msg: "Invalid property!"})
     } else if (isNaN(parseInt(inc_votes))){
         return Promise.reject({status: 400, msg: "Invalid value!"})
     }
 
-    return db.query(`
-        UPDATE reviews
-        SET
-            votes = votes + $2
-        WHERE review_id = $1
-        RETURNING *;
-    `, [review_id, inc_votes])
-    .then(({rows: updatedReview}) => {
-
-        if(!updatedReview.length){
-            return Promise.reject({status: 404, msg: 'Review ID does not exist!'})
-        }
-
-        return updatedReview[0];
+    return this.fetchReviewById(review_id).then(() => {
+        return db.query(`
+            UPDATE reviews
+            SET
+                votes = votes + $2
+            WHERE review_id = $1
+            RETURNING *;
+        `, [review_id, inc_votes])
+        .then(({rows: [updatedReview]}) => {
+            return updatedReview;
+        })
     })
+
 }
