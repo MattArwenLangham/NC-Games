@@ -12,6 +12,7 @@ exports.retrieveUserByUsername = (username) => {
     if(!username){
         return Promise.reject({status: 400, msg: "No username supplied!"})
     }
+    
     return db.query(`
         SELECT * FROM users
         WHERE users.username = $1;`, [username])
