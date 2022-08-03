@@ -7,3 +7,18 @@ exports.retrieveUsers = () => {
         return users
     })
 }
+
+exports.retrieveUserByUsername = (username) => {
+    if(!username){
+        return Promise.reject({status: 400, msg: "No username supplied!"})
+    }
+    return db.query(`
+        SELECT * FROM users
+        WHERE users.username = $1;`, [username])
+    .then(({ rows: user }) => {
+        if(!user.length){
+            return Promise.reject({status: 404, msg: "Username doesn't exist"})
+        }
+        return user
+    })
+}

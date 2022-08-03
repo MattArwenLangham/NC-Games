@@ -1,3 +1,4 @@
-exports.categoryControllers = require('./categories.js');
+exports.categoryControllers = require('./categories.js')
 exports.reviewControllers = require("./reviews.js")
 exports.userControllers = require("./users")
+exports.commentControllers = require("./comments")

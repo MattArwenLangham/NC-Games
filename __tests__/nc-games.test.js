@@ -139,7 +139,7 @@ describe("/api/reviews/:review_id", () => {
     })
 
     describe("PATCH", () => {
-        test("Status 201: When a valid review_id is passed, if a positive number is passed, increment it by that much", () => {
+        test("Status 200: When a valid review_id is passed, if a positive number is passed, increment it by that much", () => {
 
             return request(app)
             .patch("/api/reviews/2")
@@ -154,7 +154,7 @@ describe("/api/reviews/:review_id", () => {
             })
         })
 
-        test("Status 201: When a valid review_id is passed, if a negative number is passed, decrement it by that much", () => {
+        test("Status 200: When a valid review_id is passed, if a negative number is passed, decrement it by that much", () => {
 
             return request(app)
             .patch("/api/reviews/4")
@@ -265,6 +265,81 @@ describe("/api/reviews/:review_id/comments", () => {
             return request(app)
             .get("/api/reviews/404/comments")
             .expect(404)
+            .then(({ body }) => {
+                const { msg } = body;
+                expect(msg).toBe('Review ID does not exist!')
+            })
+        })
+    })
+
+    describe("POST", () => {
+        test("Status 201: When POST is used on the ./comments endpoint and passed an object with a username and body, returns the posted comment.", () => {
+            return request(app)
+            .post("/api/reviews/12/comments")
+            .send({username: 'bainesface', body: 'Scythe is Lythe'})
+            .expect(201)
+            .then(({body}) => {
+                const { comment } = body;
+                expect(comment).toEqual({
+                    comment_id: 7,
+                    body: 'Scythe is Lythe',
+                    review_id: 12,
+                    author: 'bainesface',
+                    votes: 0,
+                    created_at: expect.any(String)
+                })
+            })
+        })
+
+        test("Status 400: When an incorrect data type is input, return status code 400 and 'Invalid review ID type'", () => {
+            return request(app)
+            .post("/api/reviews/twelve/comments")
+            .expect(400)
+            .send({username: 'bainesface', body: 'Scythe is Lythe'})
+            .then(({ body }) => {
+                const { msg } = body;
+                expect(msg).toBe('Invalid review ID type!')
+            })
+        })
+
+        test("Status 400: If body is empty (no comment), return status code 400 and 'No comment supplied!'", () => {
+            return request(app)
+            .post("/api/reviews/7/comments")
+            .expect(400)
+            .send({username: 'bainesface'})
+            .then(({ body }) => {
+                const { msg } = body;
+                expect(msg).toBe('No comment supplied!')
+            })
+        })
+
+        test("Status 400: If username is empty, return status code 400 and 'No username supplied'", () => {
+            return request(app)
+            .post("/api/reviews/7/comments")
+            .expect(400)
+            .send({body: "Really cool game, liked it a lot."})
+            .then(({ body }) => {
+                const { msg } = body;
+                expect(msg).toBe('No username supplied!')
+            })
+        })
+
+        test("Status 404: When a username that doesn't exist, return status code 404 and 'Username doesn't exist'", () => {
+            return request(app)
+            .post("/api/reviews/10/comments")
+            .send({username: 'LeeNC', body:"Didn't like this version, so I'm ditching it for a newer version."})
+            .expect(404)
+            .then(({ body }) => {
+                const { msg } = body;
+                expect(msg).toBe("Username doesn't exist");
+            })
+        })
+
+        test("Status 404: When a valid ID is searched but doesn't exist, return status code 404 and 'Review ID does not exist'", () => {
+            return request(app)
+            .post("/api/reviews/99/comments")
+            .expect(404)
+            .send({username: 'bainesface', body: 'Red Balloons is the best horror game. IT rocks.'})
             .then(({ body }) => {
                 const { msg } = body;
                 expect(msg).toBe('Review ID does not exist!')

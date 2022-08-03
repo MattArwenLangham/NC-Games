@@ -1,7 +1,8 @@
 const {
     categoryControllers: { getCategories },
     reviewControllers: { getReviewById, patchReview, getReviews,getCommentsByReviewId },
-    userControllers: { getUsers }
+    userControllers: { getUsers },
+    commentControllers: { postComment }
 } = require("./controllers/index");
 
 const express = require("express");
@@ -15,6 +16,7 @@ app.get("/api/reviews", getReviews)
 app.get("/api/reviews/:review_id", getReviewById)
 app.patch("/api/reviews/:review_id", patchReview)
 app.get("/api/reviews/:review_id/comments", getCommentsByReviewId)
+app.post("/api/reviews/:review_id/comments", postComment)
 
 app.get("/api/users", getUsers)
 
