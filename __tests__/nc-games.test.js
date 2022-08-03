@@ -279,8 +279,8 @@ describe("/api/reviews/:review_id/comments", () => {
             .send({username: 'bainesface', body: 'Scythe is Lythe'})
             .expect(201)
             .then(({body}) => {
-                const { postedComment } = body;
-                expect(postedComment).toEqual({
+                const { comment } = body;
+                expect(comment).toEqual({
                     comment_id: 7,
                     body: 'Scythe is Lythe',
                     review_id: 12,
@@ -299,6 +299,28 @@ describe("/api/reviews/:review_id/comments", () => {
             .then(({ body }) => {
                 const { msg } = body;
                 expect(msg).toBe('Invalid review ID type!')
+            })
+        })
+
+        test("Status 400: If body is empty (no comment), return status code 400 and 'No comment supplied!'", () => {
+            return request(app)
+            .post("/api/reviews/7/comments")
+            .expect(400)
+            .send({username: 'bainesface'})
+            .then(({ body }) => {
+                const { msg } = body;
+                expect(msg).toBe('No comment supplied!')
+            })
+        })
+
+        test("Status 400: If username is empty, return status code 400 and 'No username supplied'", () => {
+            return request(app)
+            .post("/api/reviews/7/comments")
+            .expect(400)
+            .send({body: "Really cool game, liked it a lot."})
+            .then(({ body }) => {
+                const { msg } = body;
+                expect(msg).toBe('No username supplied!')
             })
         })
 

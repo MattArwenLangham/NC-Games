@@ -8,9 +8,9 @@ exports.postComment = (req, res, next) => {
 
     Promise.all([fetchReviewById(review_id), retrieveUserByUsername(username)])
     .then(() => {
-        insertComment(body, review_id, username)
-        .then((postedComment) => {
-            res.status(201).send({ postedComment })
+        return insertComment(body, review_id, username)
+        .then((comment) => {
+            res.status(201).send({ comment })
         })
     })
     .catch((err) => {
