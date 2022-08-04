@@ -12,7 +12,7 @@ if (!process.env.PGDATABASE && !process.env.DATABASE_URL) {
 const config = 
   ENV === 'production' ? {
     connectionString: process.env.DATABASE_URL,
-    SSL: {
+    ssl: {
       rejectUnauthorized: false,
     },
   } : {}
