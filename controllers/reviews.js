@@ -4,8 +4,12 @@ const { fetchReviewById,
         fetchCommentsByReviewId } = require("../models/reviews")
 
 exports.getReviews = (req, res, next) => {
-    fetchReviews().then((reviews) => {
+    const { sort_by, order, category } = req.query
+    fetchReviews(sort_by, order, category).then((reviews) => {
         res.status(200).send({ reviews })
+    })
+    .catch((err) => {
+        next(err)
     })
 }
 
@@ -16,7 +20,7 @@ exports.getReviewById = (req, res, next) => {
         res.status(200).send({ review })
     })
     .catch((err) => {
-        next(err);
+        next(err)
     })
 }
 
@@ -28,7 +32,7 @@ exports.getCommentsByReviewId = (req, res, next) => {
         res.status(200).send({ comments })
     })
     .catch((err) => {
-        next(err);
+        next(err)
     })
 }
 
@@ -40,7 +44,7 @@ exports.patchReview = (req, res, next) => {
         res.status(201).send({ review: updatedReview })
     })
     .catch((err) => {
-        next(err);
+        next(err)
     })
 }
 
