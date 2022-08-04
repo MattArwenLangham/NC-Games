@@ -85,9 +85,9 @@ The testing is done via jest. As mentioned in the Dev Dependencies section, if y
 2. jest-extended
 3. supertest
 
-To run tests simply type the below in the terminal.
+To run tests simply input the command:
 
-> npm run t
+> npm t
 
 [More information on the jest package](https://jestjs.io/docs/getting-started)
 
