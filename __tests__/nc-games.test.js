@@ -46,7 +46,7 @@ describe("/api/reviews", () => {
             .get("/api/reviews")
             .expect(200)
             .then(({body}) => {
-                const { reviews } = body;
+                const { reviews } = body
                 expect(reviews).toBeInstanceOf(Array)
                 expect(reviews).toHaveLength(13)
                 reviews.forEach((review) => {
@@ -75,6 +75,96 @@ describe("/api/reviews", () => {
                 expect(reviews).toBeSortedBy('created_at', { 
                     descending: true })
             })
+        })
+
+        describe("Queries", () => {
+            describe("sort_by", () => {
+                test("Status 200: When a sort_by query is passed, return a list of reviews sorted by the given column", () => {
+                    return request(app)
+                    .get("/api/reviews?sort_by=votes")
+                    .expect(200)
+                    .then(({body}) => {
+                        const { reviews } = body;
+                        expect(reviews).toBeSortedBy('votes', {
+                            descending: true
+                        })
+                    })
+                })
+
+                test("Status 400: When a sort_by query is passed but it's not a valid column, return a status code 400 with the message 'Invalid category'", () => {
+                    return request(app)
+                    .get("/api/reviews?sort_by=players")
+                    .expect(400)
+                    .then(({body}) => {
+                        const { msg } = body;
+                        expect(msg).toBe('Invalid column!')
+                    })
+                })
+            })
+
+            describe("order", () => {
+                test("Status 200: When order query is passed, return a list of reviews sorted by the given column, in the specified order", () => {
+                    return request(app)
+                    .get("/api/reviews?sort_by=category&order=ASC")
+                    .expect(200)
+                    .then(({body}) => {
+                        const { reviews } = body;
+                        expect(reviews).toBeSortedBy('category', {
+                            ascending: true
+                        })
+                    })
+                })
+
+                test("Status 400: When order query is passed but not 'ASC' or 'DESC' return an error message.", () => {
+                    return request(app)
+                    .get("/api/reviews?sort_by=title&order=backwards")
+                    .expect(400)
+                    .then(({body}) => {
+                        const { msg } = body;
+                        expect(msg).toBe("Invalid order specified! ('ASC' or 'DESC')")
+                    })
+                })
+            })
+
+            describe("category", () => {
+                test("Status 200: When category query is passed, return a list of reviews filtered to that category", () => {
+                    return request(app)
+                    .get("/api/reviews?category=dexterity")
+                    .expect(200)
+                    .then(({body}) => {
+                        const { reviews } = body
+                        expect(reviews).toHaveLength(1)
+                        reviews.forEach((review) => {
+                            expect(review).toEqual(
+                                expect.objectContaining({
+                                    category: 'dexterity'
+                                })
+                            )
+                        })
+                    })
+                })
+
+                test("Status 400: When a category query is passed but it's not a valid category, return a status code 400 with the message 'Invalid category'", () => {
+                    return request(app)
+                    .get("/api/reviews?category=video+game")
+                    .expect(400)
+                    .then(({body}) => {
+                        const { msg } = body;
+                        expect(msg).toBe("Invalid category!")
+                    })
+                })
+
+                test("Status 404: When a category query is passed that is valid, but with no reviews associated with it. Return 404, 'No reviews found!'", () => {
+                    return request(app)
+                    .get("/api/reviews/?category=children's+games")
+                    .expect(404)
+                    .then(({ body }) => {
+                        const { msg } = body;
+                        expect(msg).toBe('No reviews found!')
+                    })
+                })
+            })
+
         })
     })
 })
