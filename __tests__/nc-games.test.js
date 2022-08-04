@@ -7,11 +7,11 @@ require("jest-sorted")
 
 
 beforeEach(() => {
-    return seed(data);
+    return seed(data)
 })
 
 afterAll(() => {
-    db.end();
+    db.end()
 })
 
 describe("/api/categories", () => {
@@ -22,9 +22,9 @@ describe("/api/categories", () => {
             .get("/api/categories")
             .expect(200)
             .then(({body}) => {
-                const { categories } = body;
-                expect(categories).toBeInstanceOf(Array);
-                expect(categories).toHaveLength(4);
+                const { categories } = body
+                expect(categories).toBeInstanceOf(Array)
+                expect(categories).toHaveLength(4)
                 categories.forEach((category) => {
                     expect(category).toEqual(
                         expect.objectContaining ({
@@ -71,7 +71,7 @@ describe("/api/reviews", () => {
             return request(app)
             .get("/api/reviews")
             .then(({body}) => {
-                const { reviews } = body;
+                const { reviews } = body
                 expect(reviews).toBeSortedBy('created_at', { 
                     descending: true })
             })
@@ -84,7 +84,7 @@ describe("/api/reviews", () => {
                     .get("/api/reviews?sort_by=votes")
                     .expect(200)
                     .then(({body}) => {
-                        const { reviews } = body;
+                        const { reviews } = body
                         expect(reviews).toBeSortedBy('votes', {
                             descending: true
                         })
@@ -96,7 +96,7 @@ describe("/api/reviews", () => {
                     .get("/api/reviews?sort_by=players")
                     .expect(400)
                     .then(({body}) => {
-                        const { msg } = body;
+                        const { msg } = body
                         expect(msg).toBe('Invalid column!')
                     })
                 })
@@ -108,7 +108,7 @@ describe("/api/reviews", () => {
                     .get("/api/reviews?sort_by=category&order=ASC")
                     .expect(200)
                     .then(({body}) => {
-                        const { reviews } = body;
+                        const { reviews } = body
                         expect(reviews).toBeSortedBy('category', {
                             ascending: true
                         })
@@ -120,7 +120,7 @@ describe("/api/reviews", () => {
                     .get("/api/reviews?sort_by=title&order=backwards")
                     .expect(400)
                     .then(({body}) => {
-                        const { msg } = body;
+                        const { msg } = body
                         expect(msg).toBe("Invalid order specified! ('ASC' or 'DESC')")
                     })
                 })
@@ -149,7 +149,7 @@ describe("/api/reviews", () => {
                     .get("/api/reviews?category=video+game")
                     .expect(400)
                     .then(({body}) => {
-                        const { msg } = body;
+                        const { msg } = body
                         expect(msg).toBe("Invalid category!")
                     })
                 })
@@ -159,7 +159,7 @@ describe("/api/reviews", () => {
                     .get("/api/reviews/?category=children's+games")
                     .expect(404)
                     .then(({ body }) => {
-                        const { msg } = body;
+                        const { msg } = body
                         expect(msg).toBe('No reviews found!')
                     })
                 })
@@ -178,7 +178,7 @@ describe("/api/reviews/:review_id", () => {
             .get("/api/reviews/1")
             .expect(200)
             .then(({body}) => {
-                const { review } = body;
+                const { review } = body
                 expect(review).toBeInstanceOf(Object)
                 expect(review).toEqual(
                     expect.objectContaining({
@@ -193,7 +193,7 @@ describe("/api/reviews/:review_id", () => {
                         created_at: "2021-01-18T10:00:20.514Z",
                         votes: 1,
                     })
-                );
+                )
             })
         })
 
@@ -202,8 +202,8 @@ describe("/api/reviews/:review_id", () => {
             .get("/api/reviews/1")
             .expect(200)
             .then(({body}) => {
-                const { review } = body;
-                expect(review.hasOwnProperty("comment_count")).toBe(true);
+                const { review } = body
+                expect(review.hasOwnProperty("comment_count")).toBe(true)
             })
         })
 
@@ -212,7 +212,7 @@ describe("/api/reviews/:review_id", () => {
             .get("/api/reviews/myReview")
             .expect(400)
             .then(({ body }) => {
-                const { msg } = body;
+                const { msg } = body
                 expect(msg).toBe('Invalid review ID type!')
             })
         })
@@ -222,7 +222,7 @@ describe("/api/reviews/:review_id", () => {
             .get("/api/reviews/9999")
             .expect(404)
             .then(({body}) => {
-                const { msg } = body;
+                const { msg } = body
                 expect(msg).toBe('Review ID does not exist!')
             }) 
         })
@@ -236,7 +236,7 @@ describe("/api/reviews/:review_id", () => {
             .send({inc_votes: 20})
             .expect(201)
             .then(({ body }) => {
-                const { review } = body; 
+                const { review } = body
                 expect(review).toEqual(
                     expect.objectContaining({
                         votes: 25
@@ -251,7 +251,7 @@ describe("/api/reviews/:review_id", () => {
             .send({inc_votes: -3})
             .expect(201)
             .then(({ body }) => {
-                const { review } = body; 
+                const { review } = body
                 expect(review).toEqual(
                     expect.objectContaining({
                         votes: 4
@@ -265,7 +265,7 @@ describe("/api/reviews/:review_id", () => {
             .expect(400)
             .send({inc_votes: 13})
             .then(({ body }) => {
-                const { msg } = body;
+                const { msg } = body
                 expect(msg).toBe('Invalid review ID type!')
             })
         })
@@ -276,7 +276,7 @@ describe("/api/reviews/:review_id", () => {
             .expect(400)
             .send({change_votes: 100})
             .then(({ body }) => {
-                const { msg } = body;
+                const { msg } = body
                 expect(msg).toBe('Invalid property!')
             })
         })
@@ -287,7 +287,7 @@ describe("/api/reviews/:review_id", () => {
             .expect(400)
             .send({inc_votes: "one hundred million"})
             .then(({ body }) => {
-                const { msg } = body;
+                const { msg } = body
                 expect(msg).toBe('Invalid value!')
             })
         })
@@ -298,7 +298,7 @@ describe("/api/reviews/:review_id", () => {
             .expect(404)
             .send({inc_votes: -100})
             .then(({ body }) => {
-                const { msg } = body;
+                const { msg } = body
                 expect(msg).toBe('Review ID does not exist!')
             })
         })
@@ -313,7 +313,7 @@ describe("/api/reviews/:review_id/comments", () => {
             .get("/api/reviews/2/comments")
             .expect(200)
             .then(({body}) => {
-                const { comments } = body;
+                const { comments } = body
                 expect(comments).toBeInstanceOf(Array)
                 expect(comments).toHaveLength(3)
                 comments.forEach((comment) => {
@@ -336,7 +336,7 @@ describe("/api/reviews/:review_id/comments", () => {
             .get("/api/reviews/1/comments")
             .expect(200)
             .then(({body}) => {
-                const { comments } = body;
+                const { comments } = body
                 expect(comments).toBe('No Comments!')
             })
         })
@@ -346,7 +346,7 @@ describe("/api/reviews/:review_id/comments", () => {
             .get("/api/reviews/byMatt/comments")
             .expect(400)
             .then(({ body }) => {
-                const { msg } = body;
+                const { msg } = body
                 expect(msg).toBe('Invalid review ID type!')
             })
         })
@@ -356,7 +356,7 @@ describe("/api/reviews/:review_id/comments", () => {
             .get("/api/reviews/404/comments")
             .expect(404)
             .then(({ body }) => {
-                const { msg } = body;
+                const { msg } = body
                 expect(msg).toBe('Review ID does not exist!')
             })
         })
@@ -369,7 +369,7 @@ describe("/api/reviews/:review_id/comments", () => {
             .send({username: 'bainesface', body: 'Scythe is Lythe'})
             .expect(201)
             .then(({body}) => {
-                const { comment } = body;
+                const { comment } = body
                 expect(comment).toEqual({
                     comment_id: 7,
                     body: 'Scythe is Lythe',
@@ -387,7 +387,7 @@ describe("/api/reviews/:review_id/comments", () => {
             .expect(400)
             .send({username: 'bainesface', body: 'Scythe is Lythe'})
             .then(({ body }) => {
-                const { msg } = body;
+                const { msg } = body
                 expect(msg).toBe('Invalid review ID type!')
             })
         })
@@ -398,7 +398,7 @@ describe("/api/reviews/:review_id/comments", () => {
             .expect(400)
             .send({username: 'bainesface'})
             .then(({ body }) => {
-                const { msg } = body;
+                const { msg } = body
                 expect(msg).toBe('No comment supplied!')
             })
         })
@@ -409,7 +409,7 @@ describe("/api/reviews/:review_id/comments", () => {
             .expect(400)
             .send({body: "Really cool game, liked it a lot."})
             .then(({ body }) => {
-                const { msg } = body;
+                const { msg } = body
                 expect(msg).toBe('No username supplied!')
             })
         })
@@ -420,8 +420,8 @@ describe("/api/reviews/:review_id/comments", () => {
             .send({username: 'LeeNC', body:"Didn't like this version, so I'm ditching it for a newer version."})
             .expect(404)
             .then(({ body }) => {
-                const { msg } = body;
-                expect(msg).toBe("Username doesn't exist");
+                const { msg } = body
+                expect(msg).toBe("Username doesn't exist")
             })
         })
 
@@ -431,7 +431,7 @@ describe("/api/reviews/:review_id/comments", () => {
             .expect(404)
             .send({username: 'bainesface', body: 'Red Balloons is the best horror game. IT rocks.'})
             .then(({ body }) => {
-                const { msg } = body;
+                const { msg } = body
                 expect(msg).toBe('Review ID does not exist!')
             })
         })
@@ -445,9 +445,9 @@ describe("/api/users", () => {
             .get("/api/users")
             .expect(200)
             .then(({body}) => {
-                const { users } = body;
-                expect(users).toBeInstanceOf(Array);
-                expect(users).toHaveLength(4);
+                const { users } = body
+                expect(users).toBeInstanceOf(Array)
+                expect(users).toHaveLength(4)
                 users.forEach((user) => {
                     expect(user).toEqual(
                         expect.objectContaining ({
