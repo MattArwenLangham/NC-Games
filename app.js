@@ -2,13 +2,16 @@ const {
     categoryControllers: { getCategories },
     reviewControllers: { getReviewById, patchReview, getReviews,getCommentsByReviewId },
     userControllers: { getUsers },
-    commentControllers: { postComment, deleteCommentById }
+    commentControllers: { postComment, deleteCommentById },
+    getEndpoints
 } = require("./controllers/index");
 
 const express = require("express");
 const app = express();
 
 app.use(express.json())
+
+app.get("/api/", getEndpoints)
 
 app.get("/api/categories", getCategories);
 
