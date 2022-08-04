@@ -14,6 +14,20 @@ afterAll(() => {
     db.end()
 })
 
+describe("/api/", () => {
+    describe("GET", () => {
+        test("Status 200: When the GET method is used on the /api/ endpoint, returns an object detailing all endpoints available and methods", () => {
+            return request(app)
+            .get("/api/")
+            .expect(200)
+            .then(({ body }) => {
+                const { endpoints } = body;
+                expect(endpoints).toBeInstanceOf(Object)
+            })
+        })
+    })
+})
+
 describe("/api/categories", () => {
     describe("/GET", () => {
 
