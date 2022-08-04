@@ -464,10 +464,20 @@ describe("/api/users", () => {
 
 describe("/api/comments/:comment_id", () => {
     describe("DELETE", () => {
-        test("Status 204: When a valid comment_id is passed with the delete HTTP method, delete the comment from the database and return a 204 status code", () => {
+        test("Status 204: When a valid comment_id is passed with the delete HTTP method, delete the comment from the database and return a 204 status code.", () => {
             return request(app)
             .delete("/api/comments/4")
             .expect(204)
+            .then(() => {
+                return request(app)
+                .delete("/api/comments/4")
+                .expect(404)
+                .then(({ body }) => {
+                    const { msg } = body
+                    expect(msg).toBe('Comment not found!')
+                })
+            })
+
         })
 
         test("Status 400: When an invalid comment_id data type is passed return the status code 400 and comment 'Invalid comment_id type'", () => {
