@@ -1,10 +1,10 @@
-const { insertComment } = require("../models/comments")
+const { insertComment, removeCommentById } = require("../models/comments")
 const { fetchReviewById } = require("../models/reviews")
 const { retrieveUserByUsername } = require("../models/users")
 
 exports.postComment = (req, res, next) => {
-    const { review_id } = req.params;
-    const {username, body} = req.body;
+    const { review_id } = req.params
+    const {username, body} = req.body
 
     Promise.all([fetchReviewById(review_id), retrieveUserByUsername(username)])
     .then(() => {
@@ -14,6 +14,17 @@ exports.postComment = (req, res, next) => {
         })
     })
     .catch((err) => {
-        next(err);
+        next(err)
+    })
+}
+
+exports.deleteCommentById = (req, res, next) => {
+    const { comment_id } = req.params
+    removeCommentById(comment_id)
+    .then(() => {
+        res.sendStatus(204)
+    })
+    .catch((err) => {
+        next(err)
     })
 }

@@ -2,7 +2,7 @@ const {
     categoryControllers: { getCategories },
     reviewControllers: { getReviewById, patchReview, getReviews,getCommentsByReviewId },
     userControllers: { getUsers },
-    commentControllers: { postComment }
+    commentControllers: { postComment, deleteCommentById }
 } = require("./controllers/index");
 
 const express = require("express");
@@ -19,6 +19,8 @@ app.get("/api/reviews/:review_id/comments", getCommentsByReviewId)
 app.post("/api/reviews/:review_id/comments", postComment)
 
 app.get("/api/users", getUsers)
+
+app.delete("/api/comments/:comment_id", deleteCommentById)
 
 app.use((err, req, res, next) => {
     const { status, msg } = err;
