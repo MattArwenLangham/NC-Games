@@ -1,4 +1,4 @@
-const { insertComment, removeCommentById } = require("../models/comments")
+const { insertComment, updateCommentById, removeCommentById } = require("../models/comments")
 const { fetchReviewById } = require("../models/reviews")
 const { retrieveUserByUsername } = require("../models/users")
 
@@ -12,6 +12,18 @@ exports.postComment = (req, res, next) => {
         .then((comment) => {
             res.status(201).send({ comment })
         })
+    })
+    .catch((err) => {
+        next(err)
+    })
+}
+
+exports.patchCommentById = (req, res, next) => {
+    const { comment_id } = req.params
+    const { inc_votes } = req.body
+    
+    updateCommentById(comment_id, inc_votes).then((updatedComment) => {
+        res.status(201).send({ comment : updatedComment })
     })
     .catch((err) => {
         next(err)
