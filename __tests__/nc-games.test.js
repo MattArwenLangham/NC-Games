@@ -506,6 +506,83 @@ describe("/api/users/:username", () => {
 })
 
 describe("/api/comments/:comment_id", () => {
+
+    describe("PATCH", () => {
+        test("Status 200: When a valid comment_id is passed, if a positive number is passed, increment it by that much", () => {
+
+            return request(app)
+            .patch("/api/comments/2")
+            .send({inc_votes: 7})
+            .expect(201)
+            .then(({ body }) => {
+                const { comment } = body
+                expect(comment).toEqual(
+                    expect.objectContaining({
+                        votes: 20
+                    }))
+            })
+        })
+
+        test("Status 200: When a valid comment_id is passed, if a negative number is passed, decrement it by that much", () => {
+
+            return request(app)
+            .patch("/api/comments/2")
+            .send({inc_votes: -3})
+            .expect(201)
+            .then(({ body }) => {
+                const { comment } = body
+                expect(comment).toEqual(
+                    expect.objectContaining({
+                        votes: 10
+                    }))
+            })
+        })
+
+        test("Status 400: When an incorrect data type is input, return status code 400 and 'Invalid comment ID type'", () => {
+            return request(app)
+            .patch("/api/comments/thirteen")
+            .expect(400)
+            .send({inc_votes: 13})
+            .then(({ body }) => {
+                const { msg } = body
+                expect(msg).toBe('Invalid comment ID type!')
+            })
+        })
+
+        test("Status 400: When inc_votes is left out/changed, return a status 400 with 'Invalid property'", () => {
+            return request(app)
+            .patch("/api/comments/2")
+            .expect(400)
+            .send({change_votes: 100})
+            .then(({ body }) => {
+                const { msg } = body
+                expect(msg).toBe('Invalid property!')
+            })
+        })
+
+        test("Status 400: When an non-number data type is patched to inc_votes, return a status 400 with 'Invalid value'", () => {
+            return request(app)
+            .patch("/api/comments/2")
+            .expect(400)
+            .send({inc_votes: "one hundred million"})
+            .then(({ body }) => {
+                const { msg } = body
+                expect(msg).toBe('Invalid value!')
+            })
+        })
+
+        test("Status 404: When a valid ID is searched but doesn't exist, return status code 404 and 'Comment not found!'", () => {
+            return request(app)
+            .patch("/api/comments/40")
+            .expect(404)
+            .send({inc_votes: -100})
+            .then(({ body }) => {
+                const { msg } = body
+                expect(msg).toBe('Comment not found!')
+            })
+        })
+    })
+
     describe("DELETE", () => {
         test("Status 204: When a valid comment_id is passed with the delete HTTP method, delete the comment from the database and return a 204 status code.", () => {
             return request(app)
@@ -542,5 +619,5 @@ describe("/api/comments/:comment_id", () => {
                 expect(msg).toBe('Comment not found!')
             })
         })
-    }) 
+    })
 })
