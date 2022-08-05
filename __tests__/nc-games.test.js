@@ -476,6 +476,35 @@ describe("/api/users", () => {
     })
 })
 
+describe("/api/users/:username", () => {
+    describe("GET", () => {
+        test("Status 200: When pased a valid username, returns that username object", () => {
+            return request(app)
+            .get("/api/users/mallionaire")
+            .expect(200)
+            .then(({ body }) => {
+                const { user } = body
+                expect(user).toEqual({
+                    username: 'mallionaire',
+                    name: 'haz',
+                    avatar_url:
+                      'https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg'
+                  }
+                )
+            })
+        })
+        test("Status 404: When passed a username that doesn't exist, returns an error 404 and 'Username doesn't exist'", () => {
+            return request(app)
+            .get("/api/users/matt")
+            .expect(404)
+            .then(({ body }) => {
+                const { msg } = body
+                expect(msg).toEqual("Username doesn't exist")
+            })
+        })
+    })
+})
+
 describe("/api/comments/:comment_id", () => {
     describe("DELETE", () => {
         test("Status 204: When a valid comment_id is passed with the delete HTTP method, delete the comment from the database and return a 204 status code.", () => {
