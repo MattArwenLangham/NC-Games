@@ -3,13 +3,17 @@ const {
         getReviewById, 
         patchReview, 
         getReviews,
-        getCommentsByReviewId },
+        getCommentsByReviewId,
+        postReview },
     commentControllers: {postComment}
 } = require("../controllers/index")
 
 const reviewRouter = require('express').Router()
 
-reviewRouter.get('/', getReviews)
+reviewRouter
+    .route('/')
+    .get(getReviews)
+    .post(postReview)
 
 reviewRouter
     .route('/:review_id')

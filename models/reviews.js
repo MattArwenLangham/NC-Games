@@ -1,3 +1,6 @@
+const {retrieveUserByUsername} = require("./users")
+const {checkCategoryExists} = require("./categories")
+
 const db = require("../db/connection")
 const format = require('pg-format')
 
@@ -26,7 +29,6 @@ exports.fetchReviews = (sort_by = 'created_at', order = 'DESC', category = "cate
         ORDER BY %I %s;
     `, category, sort_by, order))
     .then(({ rows: reviews }) => {
-        
         if(!reviews.length){
             return Promise.reject({status: 404, msg: 'No reviews found!'})
         }
@@ -94,4 +96,30 @@ exports.updateReview = (review_id, inc_votes) => {
         })
     })
 
+}
+
+exports.submitReview = (review) => {
+    const {owner, title, designer, review_img_url, review_body, category} = review
+    
+    Promise.all(
+        [retrieveUserByUsername(owner), 
+        checkCategoryExists(category)])
+    .then(() => {
+        return retrieveUserByUsername(owner)
+        .then(() => {
+            const created_at = new Date (Date.now())
+    
+            return db.query(`
+                INSERT INTO reviews
+                    (title, designer, owner, review_img_url, review_body, category, created_at, votes)
+                VALUES
+                    ($1, $2, $3, $4, $5, $6, $7, 0)
+                    RETURNING *;
+            `, [title, designer, owner, review_img_url, review_body, category, created_at])
+            .then(({ rows : [review] }) => {
+                return review
+            })
+        })
+
+    })
 }

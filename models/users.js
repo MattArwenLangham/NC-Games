@@ -9,6 +9,7 @@ exports.retrieveUsers = () => {
 }
 
 exports.retrieveUserByUsername = (username) => {
+    
     if(!username){
         return Promise.reject({status: 400, msg: "No username supplied!"})
     }

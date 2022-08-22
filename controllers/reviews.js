@@ -1,7 +1,8 @@
 const { fetchReviewById, 
         updateReview,
         fetchReviews,
-        fetchCommentsByReviewId } = require("../models/reviews")
+        fetchCommentsByReviewId,
+        submitReview } = require("../models/reviews")
 
 exports.getReviews = (req, res, next) => {
     const { sort_by, order, category } = req.query
@@ -48,3 +49,13 @@ exports.patchReview = (req, res, next) => {
     })
 }
 
+exports.postReview = (req, res, next) => {
+    const review = req.body
+    
+    submitReview(review).then((review) => {
+        res.status(201).send({ review })
+    })
+    .catch((err) => {
+        next(err)
+    })
+}

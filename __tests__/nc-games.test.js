@@ -3,6 +3,7 @@ const app = require ("../app.js")
 const seed = require("../db/seeds/seed.js")
 const data = require("../db/data/test-data/index")
 const db = require("../db/connection")
+const { post } = require("../app.js")
 require("jest-sorted")
 
 
@@ -54,6 +55,7 @@ describe("/api/categories", () => {
 })
 
 describe("/api/reviews", () => {
+
     describe("GET", () => {
         test("Status 200: Returns an array of reviews objects", () => {
             return request(app)
@@ -179,6 +181,62 @@ describe("/api/reviews", () => {
                 })
             })
 
+        })
+    })
+
+    describe("POST", () => {
+        test("Status 201: When a valid post review object is passed, return status 201 and the comment with additional properties", () => {
+
+            const reviewObject = {
+                owner: 'bainesface',
+                title: 'I get knocked down, and I get up again',
+                designer: 'Leslie Scott',
+                review_body: 'A game of skills and infinite patience. Jenga is just life, one wrong move and everything comes falling down',
+                category: 'dexterity'
+            }
+
+            const expectedOutput = {
+                    review_id: 14,
+                    owner: 'bainesface',
+                    title: 'I get knocked down, and I get up again',
+                    designer: 'Leslie Scott',
+                    review_body: 'A game of skills and infinite patience. Jenga is just life, one wrong move and everything comes falling down',
+                    category: 'dexterity',
+                    created_at: expect.any(String),
+                    votes: 0
+                }
+
+            return request(app)
+            .post("/api/reviews")
+            .send(reviewObject)
+            .expect(201)
+            .then(({body}) => {
+                const { review } = body
+                expect(review).toBeInstanceOf(Object)
+                expect(review).toEqual(
+                    expect.objectContaining(expectedOutput)
+                )
+            })
+        })
+
+        test("Status 404: When passed a username that doesn't exist, returns an error 404 and 'Username doesn't exist'", () => {
+
+            const reviewObject = {
+                owner: 'matt',
+                title: 'I get knocked down, and I get up again',
+                designer: 'Leslie Scott',
+                review_body: 'A game of skills and infinite patience. Jenga is just life, one wrong move and everything comes falling down',
+                category: 'dexterity'
+            }
+
+            return request(app)
+            .post("/api/reviews")
+            .send(reviewObject)
+            .expect(404)
+            .then(({ body }) => {
+                const { msg } = body
+                expect(msg).toEqual("Username doesn't exist")
+            })
         })
     })
 })
