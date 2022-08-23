@@ -7,7 +7,7 @@ const format = require('pg-format')
 exports.fetchReviews = (sort_by = 'created_at', order = 'DESC', category = "category") => {
     const validOrder = ["ASC", "DESC"]
     const validColumns = ["title", "designer", "owner", "category", "created_at", "votes", "ANY"]
-    const validCategories = ['strategy', 'hidden-roles', 'dexterity', 'push-your-luck', 'roll-and-write', 'deck-building', 'engine-building']
+    const validCategories = ['strategy', 'hidden-roles', 'dexterity', 'push-your-luck', 'roll-and-write', 'deck-building', 'engine-building', 'category']
     
     if(!validOrder.includes(order)){
         return Promise.reject({status: 400, msg: "Invalid order specified! ('ASC' or 'DESC')"})
