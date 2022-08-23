@@ -7,7 +7,7 @@ const format = require('pg-format')
 exports.fetchReviews = (sort_by = 'created_at', order = 'DESC', category = "category") => {
     const validOrder = ["ASC", "DESC"]
     const validColumns = ["title", "designer", "owner", "category", "created_at", "votes", "ANY"]
-    const validCategories = ['euro game', 'social deduction', 'dexterity', 'children\'s games', 'category']
+    const validCategories = ['strategy', 'hidden-roles', 'dexterity', 'push-your-luck', 'roll-and-write', 'deck-building', 'engine-building', 'category']
     
     if(!validOrder.includes(order)){
         return Promise.reject({status: 400, msg: "Invalid order specified! ('ASC' or 'DESC')"})
@@ -17,9 +17,9 @@ exports.fetchReviews = (sort_by = 'created_at', order = 'DESC', category = "cate
         return Promise.reject({status: 400, msg: 'Invalid category!'})
     }
 
-    if (category != 'category'){
-        category =`'${category.replace("'", "''")}'`
-    }
+    // if (category != 'category'){
+    //     category =`'${category.replace("'", "''")}'`
+    // }
 
     return db.query(format(`
         SELECT reviews.*, COUNT (comment_id) AS comment_count FROM reviews
