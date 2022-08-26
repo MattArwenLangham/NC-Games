@@ -42,6 +42,7 @@ exports.fetchReviewById = (review_id) => {
     if(isNaN(parseInt(review_id))){
         return Promise.reject({status: 400, msg: 'Invalid review ID type!'})
     }
+    if(parseInt(review_id) > 2147483647) return Promise.reject({status: 404, msg: 'Review ID does not exist!'})
 
     return db.query(`
         SELECT reviews.*, COUNT (comment_id) AS comment_count FROM reviews
@@ -59,7 +60,6 @@ exports.fetchReviewById = (review_id) => {
 }
 
 exports.fetchCommentsByReviewId = (review_id) => {
-    if(review_id > 2147483647) return Promise.reject({status: 404, msg: 'Review ID does not exist!'})
     return this.fetchReviewById(review_id)
     .then(() => {
         return db.query(`
