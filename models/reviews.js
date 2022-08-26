@@ -59,7 +59,7 @@ exports.fetchReviewById = (review_id) => {
 }
 
 exports.fetchCommentsByReviewId = (review_id) => {
-
+    if(review_id > 2147483647) return Promise.reject({status: 404, msg: 'Review ID does not exist!'})
     return this.fetchReviewById(review_id)
     .then(() => {
         return db.query(`
